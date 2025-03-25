@@ -13,6 +13,13 @@
         <audio id="barkSound" src="https://assets.mixkit.co/active_storage/sfx/2424/2424-preview.mp3"></audio>
     </div>
     <div class="desktop">
+        <!-- Cannon -->
+        <div id="cannon" class="cannon">
+            <img src="windows98-icons/png/joystick-0.png" alt="Cannon">
+        </div>
+        <div class="cannon-instructions">Press SPACE to fire</div>
+        <div id="bullet" class="bullet" style="display: none;"></div>
+
         <!-- Wallet Connect -->
         <div class="wallet-connect">
             <button id="connectWallet">Connect Wallet</button>
@@ -23,7 +30,7 @@
         <form class="search-bar" action="https://www.google.com/search" method="get" target="_blank">
             <input type="text" name="q" placeholder="Search Google...">
             <button type="submit">
-                <img src="https://win98icons.alexmeub.com/icons/png/search_web-2.png" alt="Search">
+                <img src="windows98-icons/png/search_web-0.png" alt="Search">
             </button>
         </form>
 
@@ -255,6 +262,7 @@
             </div>
         </div>
     </div>
+    <audio id="explosionSound" src="https://www.myinstants.com/media/sounds/explosion.mp3"></audio>
     <script src="script.js"></script>
 </body>
 </html> 

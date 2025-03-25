@@ -421,8 +421,8 @@ const floatingPet = document.getElementById('floatingPet');
 const barkSound = document.getElementById('barkSound');
 let petX = Math.random() * (window.innerWidth - 150);
 let petY = Math.random() * (window.innerHeight - 150);
-let petVX = (Math.random() - 0.5) * 2;
-let petVY = (Math.random() - 0.5) * 2;
+let petVX = (Math.random() - 0.5) * 4; // Increased base speed
+let petVY = (Math.random() - 0.5) * 4; // Increased base speed
 
 function updatePetPosition() {
     // Update position
@@ -442,16 +442,16 @@ function updatePetPosition() {
     floatingPet.style.left = petX + 'px';
     floatingPet.style.top = petY + 'px';
 
-    // Add some random movement
+    // Add some random movement with increased variation
     if (Math.random() < 0.02) {
-        petVX += (Math.random() - 0.5) * 0.5;
-        petVY += (Math.random() - 0.5) * 0.5;
+        petVX += (Math.random() - 0.5) * 1;
+        petVY += (Math.random() - 0.5) * 1;
         
-        // Limit speed
+        // Limit speed but allow for faster movement
         const speed = Math.sqrt(petVX * petVX + petVY * petVY);
-        if (speed > 3) {
-            petVX = (petVX / speed) * 3;
-            petVY = (petVY / speed) * 3;
+        if (speed > 6) { // Increased max speed
+            petVX = (petVX / speed) * 6;
+            petVY = (petVY / speed) * 6;
         }
     }
 
@@ -463,10 +463,16 @@ updatePetPosition();
 
 // Handle pet click
 floatingPet.addEventListener('click', () => {
-    barkSound.currentTime = 0;
-    barkSound.play();
-    floatingPet.classList.add('bark');
-    setTimeout(() => floatingPet.classList.remove('bark'), 300);
+    const barkSound = document.getElementById('barkSound');
+    if (barkSound) {
+        barkSound.volume = 0.5; // Set volume to 50%
+        barkSound.currentTime = 0;
+        barkSound.play().catch(error => {
+            console.error('Error playing bark sound:', error);
+        });
+        floatingPet.classList.add('bark');
+        setTimeout(() => floatingPet.classList.remove('bark'), 300);
+    }
 });
 
 // Handle window resize
@@ -966,4 +972,148 @@ document.querySelector('#image-viewer .title-bar-controls button[aria-label="Clo
 // Initialize wallet connection
 const connectWalletBtn = document.getElementById('connectWallet');
 const walletAddressSpan = document.getElementById('walletAddress');
-const walletBalanceSpan = document.getElementById('walletBalance'); 
+const walletBalanceSpan = document.getElementById('walletBalance');
+
+// Cannon functionality
+const cannon = document.getElementById('cannon');
+const bullet = document.getElementById('bullet');
+const pet = document.getElementById('floatingPet');
+let lastShotTime = 0; // Track the last shot time
+const SHOT_COOLDOWN = 1000; // One second cooldown in milliseconds
+let currentMouseX = 0;
+let currentMouseY = 0;
+let currentAngle = 0; // Store the current angle
+
+// Track mouse position for aiming
+document.addEventListener('mousemove', (e) => {
+    currentMouseX = e.clientX;
+    currentMouseY = e.clientY;
+    
+    const cannonRect = cannon.getBoundingClientRect();
+    const cannonCenterX = cannonRect.left + cannonRect.width / 2;
+    const cannonCenterY = cannonRect.top + cannonRect.height / 2;
+    
+    // Calculate angle between cannon and mouse
+    currentAngle = Math.atan2(currentMouseY - cannonCenterY, currentMouseX - cannonCenterX);
+    cannon.style.transform = `rotate(${currentAngle}rad)`;
+});
+
+// Shooting functionality
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && pet.style.display !== 'none') {
+        e.preventDefault(); // Prevent page scrolling
+        
+        // Check if enough time has passed since last shot
+        const currentTime = Date.now();
+        if (currentTime - lastShotTime < SHOT_COOLDOWN) {
+            return; // If not enough time has passed, ignore the shot
+        }
+        
+        // Update last shot time
+        lastShotTime = currentTime;
+        
+        const cannonRect = cannon.getBoundingClientRect();
+        const bulletSpeed = 10;
+        const cannonCenterX = cannonRect.left + cannonRect.width / 2;
+        const cannonCenterY = cannonRect.top + cannonRect.height / 2;
+        
+        // Set bullet color to gold
+        bullet.style.backgroundColor = '#FFD700';
+        
+        // Position bullet at cannon's position
+        bullet.style.left = cannonCenterX + 'px';
+        bullet.style.top = cannonCenterY + 'px';
+        bullet.style.display = 'block';
+        
+        // Calculate bullet velocity using the stored currentAngle
+        const velocityX = Math.cos(currentAngle) * bulletSpeed;
+        const velocityY = Math.sin(currentAngle) * bulletSpeed;
+        
+        // Animate bullet
+        const bulletInterval = setInterval(() => {
+            const bulletRect = bullet.getBoundingClientRect();
+            const petRect = pet.getBoundingClientRect();
+            
+            // Update bullet position using the velocity
+            const currentLeft = parseFloat(bullet.style.left);
+            const currentTop = parseFloat(bullet.style.top);
+            bullet.style.left = (currentLeft + velocityX) + 'px';
+            bullet.style.top = (currentTop + velocityY) + 'px';
+            
+            // Check for collision with pet
+            if (isColliding(bulletRect, petRect)) {
+                // Play explosion sound at half volume
+                const explosionSound = document.getElementById('explosionSound');
+                explosionSound.volume = 0.5; // Set volume to 50%
+                explosionSound.currentTime = 0;
+                explosionSound.play();
+                
+                // Stop the music
+                if (window.audioContext) {
+                    window.audioContext.close();
+                }
+                // Also stop the MIDI sequence
+                if (midiSequence) {
+                    midiSequence.stop();
+                }
+                
+                // Create explosion effect
+                createExplosion(petRect.left + petRect.width / 2, petRect.top + petRect.height / 2);
+                
+                // Remove pet and bullet
+                pet.style.display = 'none';
+                bullet.style.display = 'none';
+                clearInterval(bulletInterval);
+            }
+            
+            // Remove bullet if it goes off screen
+            if (bulletRect.left < 0 || bulletRect.left > window.innerWidth ||
+                bulletRect.top < 0 || bulletRect.top > window.innerHeight) {
+                bullet.style.display = 'none';
+                clearInterval(bulletInterval);
+            }
+        }, 16);
+    }
+});
+
+// Collision detection
+function isColliding(rect1, rect2) {
+    return !(rect1.right < rect2.left || 
+             rect1.left > rect2.right || 
+             rect1.bottom < rect2.top || 
+             rect1.top > rect2.bottom);
+}
+
+// Create explosion effect
+function createExplosion(x, y) {
+    const explosion = document.createElement('div');
+    explosion.style.position = 'fixed';
+    explosion.style.left = (x - 25) + 'px';
+    explosion.style.top = (y - 25) + 'px';
+    explosion.style.width = '50px';
+    explosion.style.height = '50px';
+    explosion.style.backgroundColor = 'orange';
+    explosion.style.borderRadius = '50%';
+    explosion.style.animation = 'explode 0.5s forwards';
+    document.body.appendChild(explosion);
+    
+    // Remove explosion element after animation
+    setTimeout(() => {
+        document.body.removeChild(explosion);
+    }, 500);
+}
+
+// Add explosion animation to CSS
+const style = document.createElement('style');
+style.textContent = `
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}`;
+document.head.appendChild(style); 

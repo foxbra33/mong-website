@@ -1,0 +1,624 @@
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Windows 98 Theme Colors */
+:root {
+    --win98-blue: #000000;
+    --win98-gray: #c0c0c0;
+    --win98-dark-gray: #808080;
+    --win98-light-gray: #ffffff;
+    --win98-border-dark: #404040;
+    --win98-border-light: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'MS Sans Serif', sans-serif;
+}
+
+body {
+    background-color: var(--win98-blue);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.desktop {
+    height: 100vh;
+    position: relative;
+}
+
+/* Desktop Text */
+@keyframes pulse {
+    0% {
+        opacity: 0.3;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                     0 0 20px rgba(255, 215, 0, 0.3),
+                     0 0 30px rgba(255, 215, 0, 0.2);
+    }
+    50% {
+        opacity: 0.7;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
+                     0 0 30px rgba(255, 215, 0, 0.6),
+                     0 0 40px rgba(255, 215, 0, 0.4);
+    }
+    100% {
+        opacity: 0.3;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                     0 0 20px rgba(255, 215, 0, 0.3),
+                     0 0 30px rgba(255, 215, 0, 0.2);
+    }
+}
+
+.desktop::before {
+    content: "$MONG";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    font-weight: bold;
+    color: #FFD700;
+    animation: pulse 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Search Bar */
+.search-bar {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 1;
+    width: 400px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 2px solid;
+    border-color: var(--win98-border-dark) var(--win98-border-light) var(--win98-border-light) var(--win98-border-dark);
+    background: white;
+    color: black;
+    outline: none;
+}
+
+.search-bar input:focus {
+    border-color: var(--win98-border-dark);
+}
+
+.search-bar button {
+    padding: 5px 10px;
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-border-light) var(--win98-border-dark) var(--win98-border-dark) var(--win98-border-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar button:active {
+    border-color: var(--win98-border-dark) var(--win98-border-light) var(--win98-border-light) var(--win98-border-dark);
+    padding: 6px 9px 4px 11px;
+}
+
+.search-bar button img {
+    width: 16px;
+    height: 16px;
+}
+
+/* Price Display */
+.price-display {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    text-align: center;
+}
+
+.price-display span {
+    font-size: 48px;
+    font-weight: bold;
+    color: #FFD700;
+    animation: pulse 3s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                 0 0 20px rgba(255, 215, 0, 0.3),
+                 0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.price-display span.up {
+    color: #00FF00;
+}
+
+.price-display span.down {
+    color: #FF0000;
+}
+
+/* Desktop Icons */
+.desktop-icon {
+    width: 80px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    margin: 10px;
+    display: inline-block;
+}
+
+.desktop-icon img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 5px;
+}
+
+.desktop-icon span {
+    font-size: 12px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Windows */
+.window {
+    position: absolute;
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-border-light) var(--win98-border-dark) var(--win98-border-dark) var(--win98-border-light);
+    min-width: 300px;
+    min-height: 200px;
+    top: 50px;
+    left: 50px;
+    display: none;
+}
+
+.window.active {
+    display: block;
+}
+
+.title-bar {
+    background: var(--win98-blue);
+    color: white;
+    padding: 3px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+}
+
+.title-bar-text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.title-bar-text img {
+    width: 16px;
+    height: 16px;
+}
+
+.title-bar-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.title-bar-controls button {
+    width: 16px;
+    height: 14px;
+    border: 1px solid var(--win98-border-light);
+    background: var(--win98-gray);
+    cursor: pointer;
+}
+
+.window-body {
+    padding: 10px;
+}
+
+.folder {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.folder img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+}
+
+/* File icon in My Documents */
+#my-documents .folder {
+    cursor: pointer;
+}
+
+#my-documents .folder:hover {
+    background: var(--win98-blue);
+    color: white;
+}
+
+#my-documents .folder img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+}
+
+#my-documents .folder span {
+    font-size: 12px;
+    color: black;
+}
+
+#my-documents .folder:hover span {
+    color: white;
+}
+
+/* Taskbar */
+.taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    background: var(--win98-gray);
+    border-top: 2px solid var(--win98-border-light);
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+}
+
+.start-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 5px;
+    height: 20px;
+    margin: 2px;
+    background: var(--win98-gray);
+    border: 1px solid var(--win98-border-light);
+    cursor: pointer;
+}
+
+.start-button img {
+    width: 20px;
+    height: 20px;
+}
+
+.taskbar-items {
+    display: flex;
+    gap: 2px;
+    margin-left: 5px;
+}
+
+.taskbar-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 5px;
+    background: var(--win98-gray);
+    border: 1px solid var(--win98-border-dark);
+    cursor: pointer;
+}
+
+.taskbar-item.active {
+    background: var(--win98-gray);
+    border: 1px solid var(--win98-border-light);
+}
+
+.taskbar-item img {
+    width: 16px;
+    height: 16px;
+}
+
+.system-tray {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 5px;
+}
+
+.system-tray img {
+    width: 16px;
+    height: 16px;
+}
+
+.time {
+    font-size: 12px;
+    color: black;
+}
+
+/* Start Menu */
+.start-menu {
+    position: fixed;
+    bottom: 28px;
+    left: 0;
+    width: 200px;
+    background: var(--win98-gray);
+    border: 1px solid var(--win98-border-light);
+    border-right: 1px solid var(--win98-border-dark);
+    border-bottom: 1px solid var(--win98-border-dark);
+    z-index: 1001;
+}
+
+.start-menu-header {
+    background: var(--win98-blue);
+    color: white;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.start-menu-header img {
+    width: 20px;
+    height: 20px;
+}
+
+.start-menu-items {
+    padding: 5px 0;
+}
+
+.start-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 5px;
+    cursor: pointer;
+}
+
+.start-menu-item:hover {
+    background: var(--win98-blue);
+    color: white;
+}
+
+.start-menu-item img {
+    width: 16px;
+    height: 16px;
+}
+
+.start-menu-divider {
+    height: 1px;
+    background: var(--win98-border-dark);
+    margin: 5px 0;
+}
+
+/* Paint Window */
+.paint-toolbar {
+    background: var(--win98-gray);
+    border-bottom: 1px solid var(--win98-border-dark);
+    padding: 5px;
+}
+
+.paint-tools {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 5px;
+}
+
+.paint-tool {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--win98-border-light);
+    background: var(--win98-gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.paint-tool:hover {
+    border-color: var(--win98-border-dark);
+}
+
+.paint-tool img {
+    width: 16px;
+    height: 16px;
+}
+
+.paint-colors {
+    display: flex;
+    gap: 1px;
+    flex-wrap: wrap;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--win98-border-dark);
+    cursor: pointer;
+}
+
+.color-box:hover {
+    border-color: var(--win98-border-light);
+}
+
+#paintCanvas {
+    background: white;
+    border: 1px solid var(--win98-border-dark);
+    margin: 10px;
+}
+
+/* Image Viewer */
+.image-viewer-toolbar {
+    padding: 5px;
+    border-bottom: 1px solid var(--win98-border-dark);
+}
+
+.image-viewer-toolbar button {
+    padding: 2px 10px;
+    background: var(--win98-gray);
+    border: 1px solid var(--win98-border-light);
+    border-right-color: var(--win98-border-dark);
+    border-bottom-color: var(--win98-border-dark);
+    cursor: pointer;
+}
+
+.image-viewer-toolbar button:active {
+    border: 1px solid var(--win98-border-dark);
+    border-right-color: var(--win98-border-light);
+    border-bottom-color: var(--win98-border-light);
+}
+
+.image-viewer-content {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    min-height: 300px;
+}
+
+.image-viewer-content img {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+#image-viewer {
+    min-width: 400px;
+    min-height: 300px;
+}
+
+/* Wallet Connect */
+.wallet-connect {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.wallet-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-border-light) var(--win98-border-dark) var(--win98-border-dark) var(--win98-border-light);
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    color: black;
+}
+
+.wallet-button:active {
+    border-color: var(--win98-border-dark) var(--win98-border-light) var(--win98-border-light) var(--win98-border-dark);
+}
+
+.wallet-button img {
+    width: 16px;
+    height: 16px;
+}
+
+.wallet-info {
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-border-dark) var(--win98-border-light) var(--win98-border-light) var(--win98-border-dark);
+    padding: 8px;
+    font-size: 12px;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#walletAddress {
+    font-family: monospace;
+    word-break: break-all;
+}
+
+#walletBalance {
+    color: #006400;
+    font-weight: bold;
+}
+
+/* Floating Pet */
+.floating-pet {
+    position: fixed;
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    pointer-events: all;
+}
+
+.floating-pet img {
+    width: 150px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+}
+
+.floating-pet:hover {
+    transform: scale(1.1);
+}
+
+.floating-pet.bark {
+    animation: bark 0.3s ease;
+}
+
+@keyframes bark {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Price Ticker */
+.price-ticker {
+    position: fixed;
+    top: 60px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.price-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-border-dark) var(--win98-border-light) var(--win98-border-light) var(--win98-border-dark);
+    padding: 5px 10px;
+    font-size: 12px;
+    color: black;
+}
+
+.price-box img {
+    width: 16px;
+    height: 16px;
+}
+
+.price-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.price-label {
+    font-weight: bold;
+}
+
+#mongPrice {
+    font-family: 'Courier New', monospace;
+}
+
+#mongPrice.up {
+    color: #008000;
+}
+
+#mongPrice.down {
+    color: #800000;
+} 

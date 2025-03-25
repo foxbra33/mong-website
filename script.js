@@ -2,19 +2,114 @@
 class MIDISequence {
     constructor() {
         this.audioContext = null;
-        // Minecraft-like chord progression (Am, F, C, G)
-        this.chords = [
-            [57, 60, 64, 69], // Am
-            [53, 57, 60, 65], // F
-            [48, 52, 55, 60], // C
-            [47, 50, 55, 59]  // G
+        // Extended diverse chord progressions and patterns
+        this.chordProgressions = [
+            // Original Minecraft-like progression
+            {
+                chords: [
+                    [57, 60, 64, 69], // Am
+                    [53, 57, 60, 65], // F
+                    [48, 52, 55, 60], // C
+                    [47, 50, 55, 59]  // G
+                ],
+                tempo: 60,
+                pattern: 'arpeggio',
+                style: 'ambient'
+            },
+            // Upbeat electronic progression
+            {
+                chords: [
+                    [60, 64, 67, 72], // C
+                    [64, 67, 71, 76], // E
+                    [67, 71, 74, 79], // G
+                    [64, 67, 71, 76]  // E
+                ],
+                tempo: 120,
+                pattern: 'staccato',
+                style: 'electronic'
+            },
+            // Mysterious progression
+            {
+                chords: [
+                    [55, 58, 62, 67], // Gm
+                    [52, 55, 59, 64], // Em
+                    [48, 52, 55, 60], // C
+                    [53, 57, 60, 65]  // F
+                ],
+                tempo: 80,
+                pattern: 'legato',
+                style: 'mysterious'
+            },
+            // Jazz-inspired progression
+            {
+                chords: [
+                    [60, 64, 67, 71], // Cmaj7
+                    [58, 62, 65, 69], // Bm7
+                    [57, 60, 64, 67], // Am7
+                    [55, 59, 62, 67]  // Gm7
+                ],
+                tempo: 100,
+                pattern: 'swing',
+                style: 'jazz'
+            },
+            // Rock progression
+            {
+                chords: [
+                    [48, 52, 55, 60], // C
+                    [50, 53, 57, 62], // Dm
+                    [52, 55, 59, 64], // Em
+                    [47, 50, 55, 59]  // G
+                ],
+                tempo: 140,
+                pattern: 'power',
+                style: 'rock'
+            },
+            // Classical progression
+            {
+                chords: [
+                    [48, 52, 55, 60], // C
+                    [45, 48, 52, 57], // Am
+                    [50, 53, 57, 62], // Dm
+                    [47, 50, 55, 59]  // G
+                ],
+                tempo: 90,
+                pattern: 'classical',
+                style: 'classical'
+            },
+            // Electronic dance progression
+            {
+                chords: [
+                    [60, 64, 67, 72], // C
+                    [64, 67, 71, 76], // E
+                    [67, 71, 74, 79], // G
+                    [64, 67, 71, 76]  // E
+                ],
+                tempo: 128,
+                pattern: 'dance',
+                style: 'dance'
+            },
+            // Blues progression
+            {
+                chords: [
+                    [48, 52, 55, 60], // C
+                    [45, 48, 52, 57], // Am
+                    [48, 52, 55, 60], // C
+                    [50, 53, 57, 62], // Dm
+                    [48, 52, 55, 60], // C
+                    [47, 50, 55, 59]  // G
+                ],
+                tempo: 100,
+                pattern: 'blues',
+                style: 'blues'
+            }
         ];
         this.sequence = [];
         this.currentIndex = 0;
         this.isPlaying = false;
-        this.tempo = 60; // Slower tempo for ambient feel
-        this.interval = 60000 / this.tempo;
+        this.currentProgression = 0;
         this.currentChord = 0;
+        this.currentSequence = 0;
+        this.playButton = document.getElementById('playMusic');
     }
 
     async initAudioContext() {
@@ -26,18 +121,85 @@ class MIDISequence {
 
     generateSequence() {
         this.sequence = [];
-        const sequenceLength = 4;
+        const currentProg = this.chordProgressions[this.currentProgression];
+        const sequenceLength = 8; // Longer sequences for more variety
         
-        // Generate a gentle arpeggio pattern
-        for (let i = 0; i < sequenceLength; i++) {
-            const chord = this.chords[this.currentChord];
-            const note = chord[i % chord.length];
-            const duration = 1; // Longer notes for ambient feel
-            this.sequence.push({ note, duration });
+        switch(currentProg.pattern) {
+            case 'arpeggio':
+                // Gentle arpeggio pattern
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[i % chord.length];
+                    this.sequence.push({ note, duration: 1 });
+                }
+                break;
+                
+            case 'staccato':
+                // Short, sharp notes
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[i % chord.length];
+                    this.sequence.push({ note, duration: 0.5 });
+                }
+                break;
+                
+            case 'legato':
+                // Smooth, connected notes
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[i % chord.length];
+                    this.sequence.push({ note, duration: 2 });
+                }
+                break;
+                
+            case 'swing':
+                // Jazz swing pattern
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[i % chord.length];
+                    this.sequence.push({ note, duration: i % 2 === 0 ? 0.75 : 0.25 });
+                }
+                break;
+                
+            case 'power':
+                // Rock power chords
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[0]; // Root note only
+                    this.sequence.push({ note, duration: 0.5 });
+                }
+                break;
+                
+            case 'classical':
+                // Classical arpeggio with varying durations
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[i % chord.length];
+                    this.sequence.push({ note, duration: 1.5 });
+                }
+                break;
+                
+            case 'dance':
+                // Electronic dance pattern
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[i % chord.length];
+                    this.sequence.push({ note, duration: 0.25 });
+                }
+                break;
+                
+            case 'blues':
+                // Blues shuffle pattern
+                for (let i = 0; i < sequenceLength; i++) {
+                    const chord = currentProg.chords[this.currentChord];
+                    const note = chord[i % chord.length];
+                    this.sequence.push({ note, duration: 0.33 });
+                }
+                break;
         }
 
         // Move to next chord
-        this.currentChord = (this.currentChord + 1) % this.chords.length;
+        this.currentChord = (this.currentChord + 1) % currentProg.chords.length;
     }
 
     playNote(note) {
@@ -49,14 +211,59 @@ class MIDISequence {
         // Convert MIDI note to frequency
         const frequency = 440 * Math.pow(2, (note - 69) / 12);
         
-        // Use a softer waveform
-        oscillator.type = 'triangle';
+        // Select waveform based on style
+        const currentProg = this.chordProgressions[this.currentProgression];
+        switch(currentProg.style) {
+            case 'ambient':
+                oscillator.type = 'triangle';
+                break;
+            case 'electronic':
+                oscillator.type = 'square';
+                break;
+            case 'mysterious':
+                oscillator.type = 'sine';
+                break;
+            case 'jazz':
+                oscillator.type = 'sine';
+                break;
+            case 'rock':
+                oscillator.type = 'square';
+                break;
+            case 'classical':
+                oscillator.type = 'sine';
+                break;
+            case 'dance':
+                oscillator.type = 'square';
+                break;
+            case 'blues':
+                oscillator.type = 'triangle';
+                break;
+        }
+        
         oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
         
-        // Create a gentle attack and release
-        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.05, this.audioContext.currentTime + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
+        // Adjust envelope based on style
+        switch(currentProg.style) {
+            case 'ambient':
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.05, this.audioContext.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
+                break;
+            case 'electronic':
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, this.audioContext.currentTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
+                break;
+            case 'mysterious':
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.08, this.audioContext.currentTime + 0.2);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1.5);
+                break;
+            default:
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, this.audioContext.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.8);
+        }
         
         oscillator.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
@@ -65,12 +272,42 @@ class MIDISequence {
         oscillator.stop(this.audioContext.currentTime + 1);
     }
 
+    nextSong() {
+        this.currentSequence = (this.currentSequence + 1) % 4;
+        this.currentProgression = (this.currentProgression + 1) % this.chordProgressions.length;
+        this.currentChord = this.currentSequence;
+        this.generateSequence();
+        if (this.isPlaying) {
+            this.currentIndex = 0;
+        }
+    }
+
+    previousSong() {
+        this.currentSequence = (this.currentSequence - 1 + 4) % 4;
+        this.currentProgression = (this.currentProgression - 1 + this.chordProgressions.length) % this.chordProgressions.length;
+        this.currentChord = this.currentSequence;
+        this.generateSequence();
+        if (this.isPlaying) {
+            this.currentIndex = 0;
+        }
+    }
+
+    updatePlayButton() {
+        if (this.playButton) {
+            this.playButton.querySelector('img').src = this.isPlaying
+                ? 'https://win98icons.alexmeub.com/icons/png/pause-2.png'
+                : 'https://win98icons.alexmeub.com/icons/png/play-2.png';
+            this.playButton.querySelector('img').alt = this.isPlaying ? 'Pause' : 'Play';
+        }
+    }
+
     async play() {
         if (this.isPlaying) return;
         
         try {
             await this.initAudioContext();
             this.isPlaying = true;
+            this.updatePlayButton();
             
             const playNext = () => {
                 if (!this.isPlaying) return;
@@ -84,7 +321,11 @@ class MIDISequence {
                 this.playNote(note);
                 
                 this.currentIndex++;
-                setTimeout(playNext, this.interval * duration);
+                if (this.isPlaying) {
+                    const currentProg = this.chordProgressions[this.currentProgression];
+                    const interval = 60000 / currentProg.tempo;
+                    setTimeout(playNext, interval * duration);
+                }
             };
 
             this.generateSequence();
@@ -97,11 +338,37 @@ class MIDISequence {
     stop() {
         this.isPlaying = false;
         this.currentIndex = 0;
+        this.updatePlayButton();
+    }
+
+    togglePlay() {
+        if (this.isPlaying) {
+            this.stop();
+        } else {
+            this.play();
+        }
     }
 }
 
 // Initialize MIDI sequence
 const midiSequence = new MIDISequence();
+
+// Music controls
+document.getElementById('prevSong').addEventListener('click', () => {
+    midiSequence.previousSong();
+});
+
+document.getElementById('playMusic').addEventListener('click', () => {
+    midiSequence.togglePlay();
+});
+
+document.getElementById('stopMusic').addEventListener('click', () => {
+    midiSequence.stop();
+});
+
+document.getElementById('nextSong').addEventListener('click', () => {
+    midiSequence.nextSong();
+});
 
 // Start playing when user interacts with the page
 document.addEventListener('click', () => {

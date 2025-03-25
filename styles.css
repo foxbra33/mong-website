@@ -621,4 +621,60 @@ body {
 
 #mongPrice.down {
     color: #800000;
+}
+
+/* Music Controls */
+.music-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-border-light) var(--win98-border-dark) var(--win98-border-dark) var(--win98-border-light);
+    width: 200px;
+    z-index: 1000;
+}
+
+.music-controls .title-bar {
+    background: #000080;
+    color: white;
+    padding: 3px 5px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.music-controls .title-bar-text {
+    font-weight: bold;
+}
+
+.music-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    background: var(--win98-gray);
+}
+
+.music-buttons button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-border-light) var(--win98-border-dark) var(--win98-border-dark) var(--win98-border-light);
+    cursor: pointer;
+    padding: 2px;
+}
+
+.music-buttons button:active {
+    border-color: var(--win98-border-dark) var(--win98-border-light) var(--win98-border-light) var(--win98-border-dark);
+    padding: 3px 1px 1px 3px;
+}
+
+.music-buttons button img {
+    width: 16px;
+    height: 16px;
 } 

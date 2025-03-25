@@ -6,6 +6,7 @@ class MIDISequence {
         this.chordProgressions = [
             // Original Minecraft-like progression
             {
+                name: "Pixel Dreams",
                 chords: [
                     [57, 60, 64, 69], // Am
                     [53, 57, 60, 65], // F
@@ -16,20 +17,9 @@ class MIDISequence {
                 pattern: 'arpeggio',
                 style: 'ambient'
             },
-            // Upbeat electronic progression
-            {
-                chords: [
-                    [60, 64, 67, 72], // C
-                    [64, 67, 71, 76], // E
-                    [67, 71, 74, 79], // G
-                    [64, 67, 71, 76]  // E
-                ],
-                tempo: 120,
-                pattern: 'staccato',
-                style: 'electronic'
-            },
             // Mysterious progression
             {
+                name: "Midnight Echoes",
                 chords: [
                     [55, 58, 62, 67], // Gm
                     [52, 55, 59, 64], // Em
@@ -42,6 +32,7 @@ class MIDISequence {
             },
             // Jazz-inspired progression
             {
+                name: "Smooth Groove",
                 chords: [
                     [60, 64, 67, 71], // Cmaj7
                     [58, 62, 65, 69], // Bm7
@@ -52,20 +43,9 @@ class MIDISequence {
                 pattern: 'swing',
                 style: 'jazz'
             },
-            // Rock progression
-            {
-                chords: [
-                    [48, 52, 55, 60], // C
-                    [50, 53, 57, 62], // Dm
-                    [52, 55, 59, 64], // Em
-                    [47, 50, 55, 59]  // G
-                ],
-                tempo: 140,
-                pattern: 'power',
-                style: 'rock'
-            },
             // Classical progression
             {
+                name: "Moonlight Sonata",
                 chords: [
                     [48, 52, 55, 60], // C
                     [45, 48, 52, 57], // Am
@@ -76,20 +56,9 @@ class MIDISequence {
                 pattern: 'classical',
                 style: 'classical'
             },
-            // Electronic dance progression
-            {
-                chords: [
-                    [60, 64, 67, 72], // C
-                    [64, 67, 71, 76], // E
-                    [67, 71, 74, 79], // G
-                    [64, 67, 71, 76]  // E
-                ],
-                tempo: 128,
-                pattern: 'dance',
-                style: 'dance'
-            },
             // Blues progression
             {
+                name: "Delta Soul",
                 chords: [
                     [48, 52, 55, 60], // C
                     [45, 48, 52, 57], // Am
@@ -103,13 +72,23 @@ class MIDISequence {
                 style: 'blues'
             }
         ];
-        this.sequence = [];
-        this.currentIndex = 0;
+        this.currentProgressionIndex = Math.floor(Math.random() * this.chordProgressions.length);
+        this.currentProgression = this.chordProgressions[this.currentProgressionIndex];
+        this.currentChordIndex = 0;
+        this.currentNoteIndex = 0;
+        this.lastNoteTime = 0;
         this.isPlaying = false;
-        this.currentProgression = 0;
-        this.currentChord = 0;
-        this.currentSequence = 0;
+        this.sequence = [];
+        this.generateSequence();
         this.playButton = document.getElementById('playMusic');
+    }
+
+    updateSongDisplay() {
+        const currentProg = this.chordProgressions[this.currentProgressionIndex];
+        const songNameElement = document.getElementById('currentSongName');
+        if (songNameElement) {
+            songNameElement.textContent = currentProg.name;
+        }
     }
 
     async initAudioContext() {
@@ -121,14 +100,15 @@ class MIDISequence {
 
     generateSequence() {
         this.sequence = [];
-        const currentProg = this.chordProgressions[this.currentProgression];
+        const currentProg = this.chordProgressions[this.currentProgressionIndex];
+        this.updateSongDisplay();
         const sequenceLength = 8; // Longer sequences for more variety
         
         switch(currentProg.pattern) {
             case 'arpeggio':
                 // Gentle arpeggio pattern
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[i % chord.length];
                     this.sequence.push({ note, duration: 1 });
                 }
@@ -137,7 +117,7 @@ class MIDISequence {
             case 'staccato':
                 // Short, sharp notes
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[i % chord.length];
                     this.sequence.push({ note, duration: 0.5 });
                 }
@@ -146,7 +126,7 @@ class MIDISequence {
             case 'legato':
                 // Smooth, connected notes
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[i % chord.length];
                     this.sequence.push({ note, duration: 2 });
                 }
@@ -155,7 +135,7 @@ class MIDISequence {
             case 'swing':
                 // Jazz swing pattern
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[i % chord.length];
                     this.sequence.push({ note, duration: i % 2 === 0 ? 0.75 : 0.25 });
                 }
@@ -164,7 +144,7 @@ class MIDISequence {
             case 'power':
                 // Rock power chords
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[0]; // Root note only
                     this.sequence.push({ note, duration: 0.5 });
                 }
@@ -173,7 +153,7 @@ class MIDISequence {
             case 'classical':
                 // Classical arpeggio with varying durations
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[i % chord.length];
                     this.sequence.push({ note, duration: 1.5 });
                 }
@@ -182,7 +162,7 @@ class MIDISequence {
             case 'dance':
                 // Electronic dance pattern
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[i % chord.length];
                     this.sequence.push({ note, duration: 0.25 });
                 }
@@ -191,7 +171,7 @@ class MIDISequence {
             case 'blues':
                 // Blues shuffle pattern
                 for (let i = 0; i < sequenceLength; i++) {
-                    const chord = currentProg.chords[this.currentChord];
+                    const chord = currentProg.chords[this.currentChordIndex];
                     const note = chord[i % chord.length];
                     this.sequence.push({ note, duration: 0.33 });
                 }
@@ -199,7 +179,7 @@ class MIDISequence {
         }
 
         // Move to next chord
-        this.currentChord = (this.currentChord + 1) % currentProg.chords.length;
+        this.currentChordIndex = (this.currentChordIndex + 1) % currentProg.chords.length;
     }
 
     playNote(note) {
@@ -212,7 +192,7 @@ class MIDISequence {
         const frequency = 440 * Math.pow(2, (note - 69) / 12);
         
         // Select waveform based on style
-        const currentProg = this.chordProgressions[this.currentProgression];
+        const currentProg = this.chordProgressions[this.currentProgressionIndex];
         switch(currentProg.style) {
             case 'ambient':
                 oscillator.type = 'triangle';
@@ -272,32 +252,36 @@ class MIDISequence {
         oscillator.stop(this.audioContext.currentTime + 1);
     }
 
-    nextSong() {
-        this.currentSequence = (this.currentSequence + 1) % 4;
-        this.currentProgression = (this.currentProgression + 1) % this.chordProgressions.length;
-        this.currentChord = this.currentSequence;
+    nextProgression() {
+        this.currentProgressionIndex = (this.currentProgressionIndex + 1) % this.chordProgressions.length;
+        this.currentProgression = this.chordProgressions[this.currentProgressionIndex];
+        this.currentChordIndex = 0;
+        this.currentNoteIndex = 0;
+        this.lastNoteTime = 0;
         this.generateSequence();
-        if (this.isPlaying) {
-            this.currentIndex = 0;
-        }
+        this.updateDisplay();
     }
 
-    previousSong() {
-        this.currentSequence = (this.currentSequence - 1 + 4) % 4;
-        this.currentProgression = (this.currentProgression - 1 + this.chordProgressions.length) % this.chordProgressions.length;
-        this.currentChord = this.currentSequence;
+    previousProgression() {
+        this.currentProgressionIndex = (this.currentProgressionIndex - 1 + this.chordProgressions.length) % this.chordProgressions.length;
+        this.currentProgression = this.chordProgressions[this.currentProgressionIndex];
+        this.currentChordIndex = 0;
+        this.currentNoteIndex = 0;
+        this.lastNoteTime = 0;
         this.generateSequence();
-        if (this.isPlaying) {
-            this.currentIndex = 0;
-        }
+        this.updateDisplay();
     }
 
     updatePlayButton() {
         if (this.playButton) {
-            this.playButton.querySelector('img').src = this.isPlaying
-                ? 'https://win98icons.alexmeub.com/icons/png/pause-2.png'
-                : 'https://win98icons.alexmeub.com/icons/png/play-2.png';
-            this.playButton.querySelector('img').alt = this.isPlaying ? 'Pause' : 'Play';
+            const img = this.playButton.querySelector('img');
+            if (this.isPlaying) {
+                img.src = 'https://cdn-icons-png.flaticon.com/512/727/727242.png';
+                img.alt = 'Pause';
+            } else {
+                img.src = 'https://cdn-icons-png.flaticon.com/512/727/727245.png';
+                img.alt = 'Play';
+            }
         }
     }
 
@@ -312,17 +296,17 @@ class MIDISequence {
             const playNext = () => {
                 if (!this.isPlaying) return;
 
-                if (this.currentIndex >= this.sequence.length) {
+                if (this.currentNoteIndex >= this.sequence.length) {
                     this.generateSequence();
-                    this.currentIndex = 0;
+                    this.currentNoteIndex = 0;
                 }
 
-                const { note, duration } = this.sequence[this.currentIndex];
+                const { note, duration } = this.sequence[this.currentNoteIndex];
                 this.playNote(note);
                 
-                this.currentIndex++;
+                this.currentNoteIndex++;
                 if (this.isPlaying) {
-                    const currentProg = this.chordProgressions[this.currentProgression];
+                    const currentProg = this.chordProgressions[this.currentProgressionIndex];
                     const interval = 60000 / currentProg.tempo;
                     setTimeout(playNext, interval * duration);
                 }
@@ -332,12 +316,14 @@ class MIDISequence {
             playNext();
         } catch (error) {
             console.error('Error starting playback:', error);
+            this.isPlaying = false;
+            this.updatePlayButton();
         }
     }
 
     stop() {
         this.isPlaying = false;
-        this.currentIndex = 0;
+        this.currentNoteIndex = 0;
         this.updatePlayButton();
     }
 
@@ -348,6 +334,10 @@ class MIDISequence {
             this.play();
         }
     }
+
+    updateDisplay() {
+        // Implementation of updateDisplay method
+    }
 }
 
 // Initialize MIDI sequence
@@ -355,7 +345,7 @@ const midiSequence = new MIDISequence();
 
 // Music controls
 document.getElementById('prevSong').addEventListener('click', () => {
-    midiSequence.previousSong();
+    midiSequence.previousProgression();
 });
 
 document.getElementById('playMusic').addEventListener('click', () => {
@@ -367,7 +357,7 @@ document.getElementById('stopMusic').addEventListener('click', () => {
 });
 
 document.getElementById('nextSong').addEventListener('click', () => {
-    midiSequence.nextSong();
+    midiSequence.nextProgression();
 });
 
 // Start playing when user interacts with the page
@@ -554,23 +544,15 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// Audio setup
+// Simplified audio setup
 let audioContext;
 let analyser;
 let audioData;
 try {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
+    analyser.fftSize = 128; // Reduced from 256 to 128
     audioData = new Uint8Array(analyser.frequencyBinCount);
-
-    // Get audio input
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-            const source = audioContext.createMediaStreamSource(stream);
-            source.connect(analyser);
-        })
-        .catch(err => console.log('Audio input not available'));
 } catch (e) {
     console.log('Web Audio API not supported');
 }
@@ -650,8 +632,15 @@ document.addEventListener('mousemove', (e) => {
     mouseY = e.clientY;
 });
 
-// Animation loop
-function animate() {
+// Optimized animation loop
+let lastTime = 0;
+function animate(currentTime) {
+    if (currentTime - lastTime < 16) { // Limit to ~60fps
+        requestAnimationFrame(animate);
+        return;
+    }
+    lastTime = currentTime;
+
     pctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
     
     // Get audio data if available
@@ -669,7 +658,7 @@ function animate() {
 
     requestAnimationFrame(animate);
 }
-animate();
+animate(0);
 
 // Paint Application
 const canvas = document.getElementById('paintCanvas');
@@ -795,6 +784,67 @@ document.querySelectorAll('.start-menu-item').forEach(item => {
     });
 });
 
+// Function to bring window to front
+function bringWindowToFront(window) {
+    // Remove active class from all windows
+    document.querySelectorAll('.window').forEach(w => {
+        w.classList.remove('active');
+        // Only reset z-index for non-maximized windows
+        if (!w.classList.contains('maximized')) {
+            w.style.zIndex = '1';
+        }
+    });
+    
+    // Add active class to clicked window
+    window.classList.add('active');
+    
+    // Set highest z-index for the clicked window
+    window.style.zIndex = '1000';
+}
+
+// Update maximize button handler
+function setupWindowControls(window) {
+    const closeBtn = window.querySelector('.title-bar-controls button[aria-label="Close"]');
+    const minimizeBtn = window.querySelector('.title-bar-controls button[aria-label="Minimize"]');
+    const maximizeBtn = window.querySelector('.title-bar-controls button[aria-label="Maximize"]');
+
+    closeBtn.addEventListener('click', () => {
+        window.style.display = 'none';
+        const taskbarItem = document.querySelector(`.taskbar-item[data-window="${window.id}"]`);
+        if (taskbarItem) {
+            taskbarItem.classList.remove('active');
+        }
+    });
+
+    minimizeBtn.addEventListener('click', () => {
+        window.style.display = 'none';
+        const taskbarItem = document.querySelector(`.taskbar-item[data-window="${window.id}"]`);
+        if (taskbarItem) {
+            taskbarItem.classList.remove('active');
+        }
+    });
+
+    maximizeBtn.addEventListener('click', () => {
+        if (window.classList.contains('maximized')) {
+            window.classList.remove('maximized');
+            window.style.zIndex = '1';
+            // Reset position and size
+            window.style.width = '';
+            window.style.height = '';
+            window.style.top = '';
+            window.style.left = '';
+            window.style.transform = '';
+        } else {
+            // Reset any transform before maximizing
+            window.style.transform = '';
+            window.style.top = '0';
+            window.style.left = '0';
+            window.classList.add('maximized');
+            window.style.zIndex = '999'; // Set to 999 so it's below the clicked window (1000)
+        }
+    });
+}
+
 // Window dragging functionality
 function makeDraggable(element) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -803,6 +853,11 @@ function makeDraggable(element) {
     titleBar.onmousedown = dragMouseDown;
 
     function dragMouseDown(e) {
+        // Don't allow dragging if window is maximized
+        if (element.classList.contains('maximized')) {
+            return;
+        }
+        
         e.preventDefault();
         pos3 = e.clientX;
         pos4 = e.clientY;
@@ -826,52 +881,15 @@ function makeDraggable(element) {
     }
 }
 
-// Window controls
-function setupWindowControls(window) {
-    const closeBtn = window.querySelector('.title-bar-controls button[aria-label="Close"]');
-    const minimizeBtn = window.querySelector('.title-bar-controls button[aria-label="Minimize"]');
-    const maximizeBtn = window.querySelector('.title-bar-controls button[aria-label="Maximize"]');
-
-    closeBtn.addEventListener('click', () => {
-        window.style.display = 'none';
-        const taskbarItem = document.querySelector(`.taskbar-item[data-window="${window.id}"]`);
-        if (taskbarItem) {
-            taskbarItem.classList.remove('active');
-        }
-    });
-
-    minimizeBtn.addEventListener('click', () => {
-        window.style.display = 'none';
-        const taskbarItem = document.querySelector(`.taskbar-item[data-window="${window.id}"]`);
-        if (taskbarItem) {
-            taskbarItem.classList.remove('active');
-        }
-    });
-
-    maximizeBtn.addEventListener('click', () => {
-        if (window.style.width === '100vw') {
-            window.style.width = '';
-            window.style.height = '';
-            window.style.top = '';
-            window.style.left = '';
-        } else {
-            window.style.width = '100vw';
-            window.style.height = 'calc(100vh - 28px)';
-            window.style.top = '0';
-            window.style.left = '0';
-        }
-    });
-}
-
 // Desktop icon click handlers
 document.querySelectorAll('.desktop-icon').forEach(icon => {
-    icon.addEventListener('click', () => {
+    icon.addEventListener('dblclick', () => {
         const windowId = icon.querySelector('img').alt.toLowerCase().replace(/\s+/g, '-');
         const window = document.getElementById(windowId);
         
         if (window) {
             window.style.display = 'block';
-            window.classList.add('active');
+            bringWindowToFront(window);
             
             // Add to taskbar if not already there
             if (!document.querySelector(`.taskbar-item[data-window="${windowId}"]`)) {
@@ -888,7 +906,7 @@ document.querySelectorAll('.desktop-icon').forEach(icon => {
                     document.querySelectorAll('.taskbar-item').forEach(item => item.classList.remove('active'));
                     taskbarItem.classList.add('active');
                     window.style.display = 'block';
-                    window.classList.add('active');
+                    bringWindowToFront(window);
                 });
             }
         }
@@ -899,6 +917,8 @@ document.querySelectorAll('.desktop-icon').forEach(icon => {
 document.querySelectorAll('.window').forEach(window => {
     makeDraggable(window);
     setupWindowControls(window);
+    // Hide all windows initially
+    window.style.display = 'none';
 });
 
 // Update clock
@@ -922,6 +942,7 @@ document.querySelectorAll('.folder[data-file]').forEach(folder => {
         if (fileName === 'dog.png') {
             const imageViewer = document.getElementById('image-viewer');
             imageViewer.style.display = 'block';
+            bringWindowToFront(imageViewer);
             
             // Add to taskbar
             const taskbarItem = document.createElement('div');
@@ -1103,4 +1124,117 @@ style.textContent = `
         opacity: 0;
     }
 }`;
-document.head.appendChild(style); 
+document.head.appendChild(style);
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Make windows draggable
+    document.querySelectorAll('.title-bar').forEach(titleBar => {
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        titleBar.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+    });
+
+    function dragStart(e) {
+        const window = this.closest('.window');
+        if (window.classList.contains('maximized')) {
+            // If window is maximized, unmaximize it first
+            window.classList.remove('maximized');
+            window.style.zIndex = '1';
+            // Reset position and size
+            window.style.width = '';
+            window.style.height = '';
+            window.style.top = '';
+            window.style.left = '';
+            window.style.transform = '';
+            return;
+        }
+
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+
+        if (e.target === this) {
+            isDragging = true;
+        }
+    }
+
+    function drag(e) {
+        if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+
+            xOffset = currentX;
+            yOffset = currentY;
+
+            setTranslate(currentX, currentY, this.closest('.window'));
+        }
+    }
+
+    function dragEnd() {
+        initialX = currentX;
+        initialY = currentY;
+        isDragging = false;
+    }
+
+    function setTranslate(xPos, yPos, el) {
+        el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+    }
+});
+
+// Add click handlers to all windows
+document.querySelectorAll('.window').forEach(window => {
+    window.addEventListener('click', () => {
+        bringWindowToFront(window);
+    });
+});
+
+// Update maximize button handler
+function setupWindowControls(window) {
+    const closeBtn = window.querySelector('.title-bar-controls button[aria-label="Close"]');
+    const minimizeBtn = window.querySelector('.title-bar-controls button[aria-label="Minimize"]');
+    const maximizeBtn = window.querySelector('.title-bar-controls button[aria-label="Maximize"]');
+
+    closeBtn.addEventListener('click', () => {
+        window.style.display = 'none';
+        const taskbarItem = document.querySelector(`.taskbar-item[data-window="${window.id}"]`);
+        if (taskbarItem) {
+            taskbarItem.classList.remove('active');
+        }
+    });
+
+    minimizeBtn.addEventListener('click', () => {
+        window.style.display = 'none';
+        const taskbarItem = document.querySelector(`.taskbar-item[data-window="${window.id}"]`);
+        if (taskbarItem) {
+            taskbarItem.classList.remove('active');
+        }
+    });
+
+    maximizeBtn.addEventListener('click', () => {
+        if (window.classList.contains('maximized')) {
+            window.classList.remove('maximized');
+            window.style.zIndex = '1';
+            // Reset position and size
+            window.style.width = '';
+            window.style.height = '';
+            window.style.top = '';
+            window.style.left = '';
+            window.style.transform = '';
+        } else {
+            // Reset any transform before maximizing
+            window.style.transform = '';
+            window.style.top = '0';
+            window.style.left = '0';
+            window.classList.add('maximized');
+            window.style.zIndex = '999'; // Set to 999 so it's below the clicked window (1000)
+        }
+    });
+} 

@@ -61,7 +61,7 @@ body {
 .desktop::before {
     content: "$MONG";
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 120px;
@@ -75,7 +75,7 @@ body {
 /* Search Bar */
 .search-bar {
     position: absolute;
-    top: 60%;
+    top: 50%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -123,7 +123,7 @@ body {
 /* Price Display */
 .price-display {
     position: absolute;
-    top: 65%;
+    top: 55%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
@@ -189,17 +189,51 @@ body {
 .window {
     position: absolute;
     background: var(--win98-gray);
-    border: 2px solid;
-    border-color: var(--win98-border-light) var(--win98-border-dark) var(--win98-border-dark) var(--win98-border-light);
-    min-width: 300px;
-    min-height: 200px;
-    top: 50px;
-    left: 50px;
-    display: none;
+    border: 1px solid var(--win98-border-dark);
+    border-top: 1px solid var(--win98-border-light);
+    border-left: 1px solid var(--win98-border-light);
+    min-width: 200px;
+    min-height: 100px;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 
 .window.active {
     display: block;
+    z-index: 1000;
+}
+
+.window.maximized {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 28px; /* Height of taskbar */
+    width: 100%;
+    height: calc(100% - 28px);
+    margin: 0;
+    border: none;
+    z-index: 1000;
+    transform: none !important; /* Prevent dragging when maximized */
+}
+
+.window.maximized .window-body {
+    height: calc(100% - 30px); /* Subtract title bar height */
+    overflow: auto;
+}
+
+.window.maximized .paint-toolbar {
+    position: sticky;
+    top: 0;
+    background: var(--win98-gray);
+    z-index: 1;
+    padding: 5px;
+    border-bottom: 1px solid var(--win98-border-dark);
+}
+
+.window.maximized #paintCanvas {
+    width: 100%;
+    height: calc(100% - 100px); /* Adjust for toolbar */
 }
 
 .title-bar {
@@ -229,11 +263,33 @@ body {
 }
 
 .title-bar-controls button {
-    width: 16px;
-    height: 14px;
-    border: 1px solid var(--win98-border-light);
-    background: var(--win98-gray);
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--win98-border-dark);
+    border-top: 1px solid var(--win98-border-light);
+    border-left: 1px solid var(--win98-border-light);
+    background-color: var(--win98-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    padding: 0;
+}
+
+.title-bar-controls button img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.title-bar-controls button:hover {
+    background-color: var(--win98-dark-gray);
+}
+
+.title-bar-controls button:active {
+    border: 1px solid var(--win98-border-light);
+    border-top: 1px solid var(--win98-border-dark);
+    border-left: 1px solid var(--win98-border-dark);
 }
 
 .window-body {
@@ -662,6 +718,17 @@ body {
 
 .music-controls .title-bar-text {
     font-weight: bold;
+    color: white;
+}
+
+.song-name-display {
+    background-color: var(--win98-gray);
+    padding: 4px 8px;
+    border: 1px solid var(--win98-border-dark);
+    border-top: 1px solid var(--win98-border-light);
+    border-left: 1px solid var(--win98-border-light);
+    font-size: 12px;
+    color: black;
 }
 
 .music-buttons {

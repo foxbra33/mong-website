@@ -149,6 +149,15 @@ body {
 }
 
 /* Desktop Icons */
+.desktop-icons {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .desktop-icon {
     width: 80px;
     text-align: center;
@@ -156,6 +165,11 @@ body {
     cursor: pointer;
     margin: 10px;
     display: inline-block;
+    padding: 5px;
+}
+
+.desktop-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .desktop-icon img {
@@ -167,6 +181,8 @@ body {
 .desktop-icon span {
     font-size: 12px;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    color: white;
+    word-wrap: break-word;
 }
 
 /* Windows */

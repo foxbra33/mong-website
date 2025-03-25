@@ -421,8 +421,8 @@ const floatingPet = document.getElementById('floatingPet');
 const barkSound = document.getElementById('barkSound');
 let petX = Math.random() * (window.innerWidth - 150);
 let petY = Math.random() * (window.innerHeight - 150);
-let petVX = (Math.random() - 0.5) * 4; // Increased base speed
-let petVY = (Math.random() - 0.5) * 4; // Increased base speed
+let petVX = (Math.random() - 0.5) * 16; // Base speed
+let petVY = (Math.random() - 0.5) * 16; // Base speed
 
 function updatePetPosition() {
     // Update position
@@ -441,19 +441,6 @@ function updatePetPosition() {
     // Apply position
     floatingPet.style.left = petX + 'px';
     floatingPet.style.top = petY + 'px';
-
-    // Add some random movement with increased variation
-    if (Math.random() < 0.02) {
-        petVX += (Math.random() - 0.5) * 1;
-        petVY += (Math.random() - 0.5) * 1;
-        
-        // Limit speed but allow for faster movement
-        const speed = Math.sqrt(petVX * petVX + petVY * petVY);
-        if (speed > 6) { // Increased max speed
-            petVX = (petVX / speed) * 6;
-            petVY = (petVY / speed) * 6;
-        }
-    }
 
     requestAnimationFrame(updatePetPosition);
 }
@@ -979,7 +966,7 @@ const cannon = document.getElementById('cannon');
 const bullet = document.getElementById('bullet');
 const pet = document.getElementById('floatingPet');
 let lastShotTime = 0; // Track the last shot time
-const SHOT_COOLDOWN = 1000; // One second cooldown in milliseconds
+const SHOT_COOLDOWN = 4000; // Four seconds cooldown in milliseconds
 let currentMouseX = 0;
 let currentMouseY = 0;
 let currentAngle = 0; // Store the current angle

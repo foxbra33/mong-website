@@ -1,3 +1,19 @@
+// Mobile device detection
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+}
+
+// Add warning message to the page
+if (isMobileDevice()) {
+    const warning = document.createElement('div');
+    warning.className = 'mobile-warning';
+    warning.innerHTML = `
+        <h1>🚧 Mobile Support Coming Soon 🚧</h1>
+        <p>We're working on making this website mobile-friendly.<br>Please visit us on a desktop computer for the best experience.</p>
+    `;
+    document.body.insertBefore(warning, document.body.firstChild);
+}
+
 // MIDI Sequence Generator
 class MIDISequence {
     constructor() {

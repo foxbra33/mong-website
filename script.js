@@ -1237,4 +1237,140 @@ function setupWindowControls(window) {
             window.style.zIndex = '999'; // Set to 999 so it's below the clicked window (1000)
         }
     });
-} 
+}
+
+// Touch event handling for cannon
+let touchStartX = 0;
+let touchStartY = 0;
+let isDragging = false;
+
+cannon.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isDragging = true;
+});
+
+document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    
+    e.preventDefault();
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    
+    const deltaX = touchX - touchStartX;
+    const deltaY = touchY - touchStartY;
+    
+    const currentLeft = parseInt(cannon.style.left) || 50;
+    const currentBottom = parseInt(cannon.style.bottom) || 50;
+    
+    cannon.style.left = `${currentLeft + deltaX}px`;
+    cannon.style.bottom = `${currentBottom - deltaY}px`;
+    
+    touchStartX = touchX;
+    touchStartY = touchY;
+});
+
+document.addEventListener('touchend', () => {
+    isDragging = false;
+});
+
+// Touch event handling for windows
+function makeWindowDraggableOnMobile(window) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isDragging = false;
+    let startLeft = 0;
+    let startTop = 0;
+
+    const titleBar = window.querySelector('.title-bar');
+    
+    titleBar.addEventListener('touchstart', (e) => {
+        if (window.classList.contains('maximized')) return;
+        
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        startLeft = window.offsetLeft;
+        startTop = window.offsetTop;
+        isDragging = true;
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        e.preventDefault();
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        
+        const deltaX = touchX - touchStartX;
+        const deltaY = touchY - touchStartY;
+        
+        window.style.left = `${startLeft + deltaX}px`;
+        window.style.top = `${startTop + deltaY}px`;
+    });
+
+    document.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+}
+
+// Apply touch handling to all windows
+document.querySelectorAll('.window').forEach(makeWindowDraggableOnMobile);
+
+// Handle window maximize/minimize on mobile
+document.querySelectorAll('.window .title-bar-controls button[aria-label="Maximize"]').forEach(button => {
+    button.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const window = button.closest('.window');
+        if (window.classList.contains('maximized')) {
+            window.classList.remove('maximized');
+        } else {
+            window.classList.add('maximized');
+        }
+    });
+});
+
+// Handle window close on mobile
+document.querySelectorAll('.window .title-bar-controls button[aria-label="Close"]').forEach(button => {
+    button.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const window = button.closest('.window');
+        window.style.display = 'none';
+        const taskbarItem = document.querySelector(`.taskbar-item[data-window="${window.id}"]`);
+        if (taskbarItem) {
+            taskbarItem.remove();
+        }
+    });
+});
+
+// Handle desktop icon double tap on mobile
+document.querySelectorAll('.desktop-icon').forEach(icon => {
+    let lastTap = 0;
+    
+    icon.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        
+        if (tapLength < 500 && tapLength > 0) {
+            const windowId = icon.querySelector('img').alt.toLowerCase().replace(/\s+/g, '-');
+            const window = document.getElementById(windowId);
+            
+            if (window) {
+                window.style.display = 'block';
+                bringWindowToFront(window);
+                
+                if (!document.querySelector(`.taskbar-item[data-window="${windowId}"]`)) {
+                    const taskbarItem = document.createElement('div');
+                    taskbarItem.className = 'taskbar-item';
+                    taskbarItem.setAttribute('data-window', windowId);
+                    taskbarItem.innerHTML = `
+                        <img src="${icon.querySelector('img').src}" alt="${icon.querySelector('img').alt}">
+                        ${icon.querySelector('span').textContent}
+                    `;
+                    document.querySelector('.taskbar-items').appendChild(taskbarItem);
+                }
+            }
+        }
+        lastTap = currentTime;
+    });
+}); 

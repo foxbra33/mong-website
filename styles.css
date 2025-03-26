@@ -801,4 +801,182 @@ body {
     padding: 4px 8px;
     border-radius: 4px;
     z-index: 1000;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+        touch-action: none;
+    }
+
+    .desktop::before {
+        font-size: 80px;
+        top: 35%;
+    }
+
+    .search-bar {
+        width: 90%;
+        max-width: 400px;
+        top: 45%;
+    }
+
+    .price-display {
+        top: 55%;
+    }
+
+    .price-display span {
+        font-size: 36px;
+    }
+
+    .desktop-icons {
+        top: 10px;
+        left: 10px;
+        gap: 10px;
+    }
+
+    .desktop-icon {
+        width: 60px;
+        margin: 5px;
+    }
+
+    .desktop-icon img {
+        width: 36px;
+        height: 36px;
+    }
+
+    .desktop-icon span {
+        font-size: 10px;
+    }
+
+    .window {
+        width: 95%;
+        min-height: 80vh;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .window.maximized {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        transform: none;
+    }
+
+    .taskbar {
+        height: 40px;
+    }
+
+    .start-button {
+        height: 30px;
+        padding: 0 10px;
+    }
+
+    .start-button img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .cannon {
+        bottom: 60px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .cannon-instructions {
+        bottom: 65px;
+        left: 70px;
+        font-size: 10px;
+    }
+
+    .music-controls {
+        bottom: 70px;
+        right: 10px;
+        width: 180px;
+    }
+
+    .wallet-connect {
+        top: 5px;
+        right: 5px;
+    }
+
+    .wallet-button {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+
+    .wallet-info {
+        padding: 6px;
+        font-size: 10px;
+    }
+
+    /* Make windows draggable on mobile */
+    .window {
+        touch-action: none;
+    }
+
+    .title-bar {
+        touch-action: none;
+    }
+
+    /* Adjust paint window for mobile */
+    #paintCanvas {
+        width: 100%;
+        height: auto;
+        max-height: 60vh;
+    }
+
+    .paint-toolbar {
+        padding: 3px;
+    }
+
+    .paint-tool {
+        width: 32px;
+        height: 32px;
+    }
+
+    .paint-tool img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .color-box {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Touch-specific styles */
+@media (hover: none) {
+    .desktop-icon:hover {
+        background-color: transparent;
+    }
+
+    .desktop-icon:active {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .window {
+        cursor: default;
+    }
+
+    .title-bar {
+        cursor: default;
+    }
+}
+
+/* Prevent text selection on mobile */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Allow text selection in input fields */
+input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
 } 
